@@ -4,7 +4,7 @@
   "description": "Load agent skills from the internet temporarily without permanent installation. Works with Kilo, Claude Code, Cursor, Copilot, and any agent that supports skills.",
   "main": "index.js",
   "bin": {
-    "temp-skill": "./index.js"
+    "temp-skill": "index.js"
   },
   "keywords": [
     "agent-skill",
