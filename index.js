@@ -7,12 +7,27 @@ const http = require('http');
 
 const SKILLS_DIR = path.join(require('os').homedir(), '.config', 'kilo', 'skills', '.temp');
 const MAX_SKILLS = 50;
+const MAX_REDIRECTS = 10;
+const REQUEST_TIMEOUT_MS = 15000;
+const MAX_RESPONSE_BYTES = 1024 * 1024;
+
+function sanitizeName(name) {
+  return name
+    .replace(/[\x00-\x1f]/g, '')
+    .replace(/[\/\\:*?"<>|]/g, '-')
+    .replace(/\.{2,}/g, '.')
+    .replace(/^\.+|\.+$/g, '')
+    .trim() || 'unnamed';
+}
 
 function resolveUrl(input) {
   input = input.trim();
   
-  // GitHub blob URL
-  const githubMatch = input.match(/github\.com\/([^\/]+)\/([^\/]+)(?:\/tree\/([^\/]+)\/(.+))?/);
+  if (input.match(/^[a-zA-Z0-9]/) && !input.includes('://')) {
+    input = 'https://' + input;
+  }
+  
+  const githubMatch = input.match(/^https?:\/\/github\.com\/([^\/]+)\/([^\/]+)(?:\/tree\/([^\/]+)\/(.+))?/);
   if (githubMatch) {
     const [, user, repo, branch, skillPath] = githubMatch;
     const b = branch || 'main';
@@ -32,20 +47,43 @@ function resolveUrl(input) {
   return input;
 }
 
-function fetchUrl(url) {
+function fetchUrl(url, redirectCount) {
+  if (redirectCount === undefined) redirectCount = 0;
   return new Promise((resolve, reject) => {
-    const client = url.startsWith('https') ? https : http;
-    client.get(url, { headers: { 'User-Agent': 'temp-skill-loader/1.0' } }, (res) => {
+    if (redirectCount > MAX_REDIRECTS) {
+      return reject(new Error(`Too many redirects (max ${MAX_REDIRECTS})`));
+    }
+    
+    const isHttps = url.startsWith('https');
+    const client = isHttps ? https : http;
+    
+    const req = client.get(url, { headers: { 'User-Agent': 'temp-skill-loader/1.0' } }, (res) => {
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-        return fetchUrl(res.headers.location).then(resolve).catch(reject);
+        res.resume();
+        return fetchUrl(res.headers.location, redirectCount + 1).then(resolve).catch(reject);
       }
       if (res.statusCode !== 200) {
+        res.resume();
         return reject(new Error(`HTTP ${res.statusCode}`));
       }
+      let bytes = 0;
       let data = '';
-      res.on('data', chunk => data += chunk);
+      res.on('data', chunk => {
+        bytes += chunk.length;
+        if (bytes > MAX_RESPONSE_BYTES) {
+          res.destroy();
+          return reject(new Error(`Response exceeds ${MAX_RESPONSE_BYTES} bytes limit`));
+        }
+        data += chunk;
+      });
       res.on('end', () => resolve(data));
-    }).on('error', reject);
+    });
+    
+    req.on('error', reject);
+    req.setTimeout(REQUEST_TIMEOUT_MS, () => {
+      req.destroy();
+      reject(new Error(`Request timed out after ${REQUEST_TIMEOUT_MS}ms`));
+    });
   });
 }
 
@@ -133,6 +171,12 @@ Max ${MAX_SKILLS} skills per session. All skills stored in:
     }
     
     const resolved = resolveUrl(url);
+    
+    if (!resolved.startsWith('https://')) {
+      console.error('Error: only HTTPS URLs are allowed for security. Use an https:// URL.');
+      process.exit(1);
+    }
+    
     console.log(`Fetching: ${resolved}`);
     
     try {
@@ -144,11 +188,12 @@ Max ${MAX_SKILLS} skills per session. All skills stored in:
         process.exit(1);
       }
       
-      const skillDir = path.join(SKILLS_DIR, meta.name);
+      const safeName = sanitizeName(meta.name);
+      const skillDir = path.join(SKILLS_DIR, safeName);
       fs.mkdirSync(skillDir, { recursive: true });
       fs.writeFileSync(path.join(skillDir, 'SKILL.md'), content);
       
-      console.log(`Loaded temp skill '${meta.name}' from ${url}`);
+      console.log(`Loaded temp skill '${safeName}' from ${url}`);
       console.log(`Saved to: ${skillDir}`);
       if (meta.description) {
         console.log(`Description: ${meta.description.substring(0, 120)}`);

@@ -296,46 +296,46 @@ Source: [skills.sh](https://skills.sh/) — 2026-05-27.
 
 | # | Skill | Source | Installs | URL |
 |---|---|---|---|---|
-| 52 | fastapi-expert | jeffallan/claude-skills | — | `https://github.com/jeffallan/claude-skills` |
-| 53 | django-expert | jeffallan/claude-skills | — | `https://github.com/jeffallan/claude-skills` |
-| 54 | rails-expert | jeffallan/claude-skills | — | `https://github.com/jeffallan/claude-skills` |
-| 55 | nodejs-best-practices | sickn33/antigravity-awesome-skills | — | `https://github.com/sickn33/antigravity-awesome-skills` |
-| 56 | hono-api-scaffolder | jezweb/claude-skills | — | `https://github.com/jezweb/claude-skills` |
-| 57 | api-designer | jeffallan/claude-skills | — | `https://github.com/jeffallan/claude-skills` |
-| 58 | graphql-architect | jeffallan/claude-skills | — | `https://github.com/jeffallan/claude-skills` |
-| 59 | websocket-engineer | jeffallan/claude-skills | — | `https://github.com/jeffallan/claude-skills` |
+| 53 | fastapi-expert | jeffallan/claude-skills | — | `https://github.com/jeffallan/claude-skills` |
+| 54 | django-expert | jeffallan/claude-skills | — | `https://github.com/jeffallan/claude-skills` |
+| 55 | rails-expert | jeffallan/claude-skills | — | `https://github.com/jeffallan/claude-skills` |
+| 56 | nodejs-best-practices | sickn33/antigravity-awesome-skills | — | `https://github.com/sickn33/antigravity-awesome-skills` |
+| 57 | hono-api-scaffolder | jezweb/claude-skills | — | `https://github.com/jezweb/claude-skills` |
+| 58 | api-designer | jeffallan/claude-skills | — | `https://github.com/jeffallan/claude-skills` |
+| 59 | graphql-architect | jeffallan/claude-skills | — | `https://github.com/jeffallan/claude-skills` |
+| 60 | websocket-engineer | jeffallan/claude-skills | — | `https://github.com/jeffallan/claude-skills` |
 
 ### DevOps & CI/CD
 
 | # | Skill | Source | Installs | URL |
 |---|---|---|---|---|
-| 60 | github-actions-docs | xixu-me/skills | 147K | `https://github.com/xixu-me/skills` |
-| 61 | openclaw-secure-linux-cloud | xixu-me/skills | 149K | `https://github.com/xixu-me/skills` |
-| 62 | opensource-guide-coach | xixu-me/skills | 149K | `https://github.com/xixu-me/skills` |
-| 63 | develop-userscripts | xixu-me/skills | 96K | `https://github.com/xixu-me/skills` |
-| 64 | sentry-cli | sentry/dev | 48K | `https://github.com/sentry/dev` |
-| 65 | devops-engineer | jeffallan/claude-skills | — | `https://github.com/jeffallan/claude-skills` |
-| 66 | sre-engineer | jeffallan/claude-skills | — | `https://github.com/jeffallan/claude-skills` |
-| 67 | d1-migration | jezweb/claude-skills | — | `https://github.com/jezweb/claude-skills` |
+| 61 | github-actions-docs | xixu-me/skills | 147K | `https://github.com/xixu-me/skills` |
+| 62 | openclaw-secure-linux-cloud | xixu-me/skills | 149K | `https://github.com/xixu-me/skills` |
+| 63 | opensource-guide-coach | xixu-me/skills | 149K | `https://github.com/xixu-me/skills` |
+| 64 | develop-userscripts | xixu-me/skills | 96K | `https://github.com/xixu-me/skills` |
+| 65 | sentry-cli | sentry/dev | 48K | `https://github.com/sentry/dev` |
+| 66 | devops-engineer | jeffallan/claude-skills | — | `https://github.com/jeffallan/claude-skills` |
+| 67 | sre-engineer | jeffallan/claude-skills | — | `https://github.com/jeffallan/claude-skills` |
+| 68 | d1-migration | jezweb/claude-skills | — | `https://github.com/jezweb/claude-skills` |
 
 ### Browser & Scraping
 
 | # | Skill | Source | Installs | URL |
 |---|---|---|---|---|
-| 68 | agent-browser | vercel-labs/agent-browser | 281K | `https://github.com/vercel-labs/agent-browser` |
-| 69 | browser-use | browser-use/browser-use | 73K | `https://github.com/browser-use/browser-use` |
-| 70 | firecrawl | firecrawl/cli | 55K | `https://github.com/firecrawl/cli` |
-| 71 | just-scrape | scrapegraphai/just-scrape | 73K | `https://github.com/scrapegraphai/just-scrape` |
+| 69 | agent-browser | vercel-labs/agent-browser | 281K | `https://github.com/vercel-labs/agent-browser` |
+| 70 | browser-use | browser-use/browser-use | 73K | `https://github.com/browser-use/browser-use` |
+| 71 | firecrawl | firecrawl/cli | 55K | `https://github.com/firecrawl/cli` |
+| 72 | just-scrape | scrapegraphai/just-scrape | 73K | `https://github.com/scrapegraphai/just-scrape` |
 
 ### Agent Workflows
 
 | # | Skill | Source | Installs | URL |
 |---|---|---|---|---|
-| 72 | find-skills | vercel-labs/skills | 1.5M | `https://github.com/vercel-labs/skills` |
-| 73 | brainstorming | obra/superpowers | 164K | `https://github.com/obra/superpowers` |
-| 74 | writing-plans | obra/superpowers | 95K | `https://github.com/obra/superpowers` |
-| 75 | executing-plans | obra/superpowers | 82K | `https://github.com/obra/superpowers` |
-| 76 | subagent-driven-development | obra/superpowers | 71K | `https://github.com/obra/superpowers` |
+| 73 | find-skills | vercel-labs/skills | 1.5M | `https://github.com/vercel-labs/skills` |
+| 74 | brainstorming | obra/superpowers | 164K | `https://github.com/obra/superpowers` |
+| 75 | writing-plans | obra/superpowers | 95K | `https://github.com/obra/superpowers` |
+| 76 | executing-plans | obra/superpowers | 82K | `https://github.com/obra/superpowers` |
+| 77 | subagent-driven-development | obra/superpowers | 71K | `https://github.com/obra/superpowers` |
 | 78 | dispatching-parallel-agents | obra/superpowers | 64K | `https://github.com/obra/superpowers` |
 | 79 | using-git-worktrees | obra/superpowers | 62K | `https://github.com/obra/superpowers` |
 | 80 | finishing-a-development-branch | obra/superpowers | 63K | `https://github.com/obra/superpowers` |
@@ -356,20 +356,10 @@ Source: [skills.sh](https://skills.sh/) — 2026-05-27.
 | 90 | database-optimizer | jeffallan/claude-skills | — | `https://github.com/jeffallan/claude-skills` |
 | 91 | architecture-designer | jeffallan/claude-skills | — | `https://github.com/jeffallan/claude-skills` |
 | 92 | microservices-architect | jeffallan/claude-skills | — | `https://github.com/jeffallan/claude-skills` |
-
-### Mobile Development
-
-| # | Skill | Source | Installs | URL |
-|---|---|---|---|---|
 | 93 | react-native-expert | jeffallan/claude-skills | — | `https://github.com/jeffallan/claude-skills` |
 | 94 | swift-expert | jeffallan/claude-skills | — | `https://github.com/jeffallan/claude-skills` |
 | 95 | angular-new-app | angular/skills | — | `https://github.com/angular/skills` |
 | 96 | capacitor-apple-review-preflight | cap-go/capgo-skills | — | `https://github.com/cap-go/capgo-skills` |
-
-### AI & ML Development
-
-| # | Skill | Source | Installs | URL |
-|---|---|---|---|---|
 | 97 | huggingface-best | huggingface/skills | — | `https://github.com/huggingface/skills` |
 | 98 | rag-architect | jeffallan/claude-skills | — | `https://github.com/jeffallan/claude-skills` |
 | 99 | fine-tuning-expert | jeffallan/claude-skills | — | `https://github.com/jeffallan/claude-skills` |
