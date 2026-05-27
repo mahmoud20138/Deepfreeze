@@ -1,5 +1,8 @@
 # temp-skill-loader
 
+[![npm version](https://img.shields.io/npm/v/temp-skill-loader.svg)](https://www.npmjs.com/package/temp-skill-loader)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Load agent skills from the internet **temporarily** without permanent installation. Works with Kilo, Claude Code, Cursor, Copilot, Windsurf, Gemini, and any agent that supports skills.
 
 ## Why?
@@ -129,6 +132,23 @@ Browse all skills at [skills.sh](https://skills.sh/).
 | Gemini CLI | `cp temp-skill/ ~/.gemini/skills/` |
 | Cline | `cp temp-skill/ ~/.cline/skills/` |
 | Any agent | Copy `temp-skill/` to the agent's skills directory |
+
+## Changelog
+
+### 1.0.2
+
+- **Security**: Sanitize skill names to prevent path traversal via crafted frontmatter
+- **Security**: Add max 10 redirect limit to prevent infinite redirect loops
+- **Security**: Add 15s request timeout to prevent hung connections
+- **Security**: Add 1MB response size limit to prevent OOM
+- **Security**: Enforce HTTPS-only for all fetched URLs
+- **Security**: Default bare domain URLs to `https://` scheme
+- **Fix**: Anchor GitHub regex to prevent false positive domain matches
+- **Fix**: Correct duplicate/missing skill numbering in catalog (1-100 sequential)
+
+### 1.0.1
+
+- Initial stable release
 
 ## License
 
