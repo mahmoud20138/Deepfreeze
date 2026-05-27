@@ -1,0 +1,34 @@
+{
+  "name": "temp-skill-loader",
+  "version": "1.0.0",
+  "description": "Load agent skills from the internet temporarily without permanent installation. Works with Kilo, Claude Code, Cursor, Copilot, and any agent that supports skills.",
+  "main": "index.js",
+  "keywords": [
+    "agent-skill",
+    "ai-skill",
+    "claude-code",
+    "kilo",
+    "cursor",
+    "copilot",
+    "temp-skill",
+    "skills",
+    "skill-loader",
+    "agent-workflow"
+  ],
+  "author": "Mahmoud20",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mahmoud20/temp-skill-loader.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Mahmoud20/temp-skill-loader/issues"
+  },
+  "homepage": "https://github.com/Mahmoud20/temp-skill-loader#readme",
+  "files": [
+    "temp-skill/",
+    "index.js",
+    "README.md",
+    "LICENSE"
+  ]
+}
