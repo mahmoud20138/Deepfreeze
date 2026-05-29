@@ -6,18 +6,67 @@ const https = require('https');
 const http = require('http');
 
 const SKILLS_DIR = path.join(require('os').homedir(), '.config', 'kilo', 'skills', '.temp');
+const FROZEN_DIR = path.join(require('os').homedir(), '.config', 'kilo', 'skills', '.frozen');
+const SESSION_FILE = path.join(SKILLS_DIR, '.session');
 const MAX_SKILLS = 50;
 const MAX_REDIRECTS = 10;
 const REQUEST_TIMEOUT_MS = 15000;
 const MAX_RESPONSE_BYTES = 1024 * 1024;
+const SESSION_MAX_AGE_MS = 4 * 60 * 60 * 1000; // 4 hours
+
+function getSessionId() {
+  return process.env.OPENCLAUDE_SESSION_ID
+    || process.env.CLAUDE_SESSION_ID
+    || process.env.KILO_SESSION_ID
+    || `pid-${process.ppid}-${Math.floor(Date.now() / SESSION_MAX_AGE_MS)}`;
+}
+
+function readSession() {
+  try {
+    if (!fs.existsSync(SESSION_FILE)) return null;
+    const data = JSON.parse(fs.readFileSync(SESSION_FILE, 'utf8'));
+    return data;
+  } catch { return null; }
+}
+
+function writeSession(id) {
+  fs.mkdirSync(SKILLS_DIR, { recursive: true });
+  fs.writeFileSync(SESSION_FILE, JSON.stringify({ id, started: Date.now() }));
+}
+
+function hasExplicitSession() {
+  return !!(process.env.OPENCLAUDE_SESSION_ID || process.env.CLAUDE_SESSION_ID || process.env.KILO_SESSION_ID);
+}
+
+function checkSession() {
+  if (!hasExplicitSession()) {
+    // No explicit session ID — just update the marker, no auto-cleanup
+    writeSession(getSessionId());
+    return;
+  }
+  const currentId = getSessionId();
+  const existing = readSession();
+  if (existing && existing.id !== currentId) {
+    // Session changed — auto-clear old skills
+    const dirs = fs.readdirSync(SKILLS_DIR, { withFileTypes: true })
+      .filter(d => d.isDirectory());
+    for (const d of dirs) {
+      fs.rmSync(path.join(SKILLS_DIR, d.name), { recursive: true, force: true });
+    }
+    console.log(`Session changed (was: ${existing.id.substring(0, 20)}…). Cleared ${dirs.length} old temp skill(s).`);
+  }
+  writeSession(currentId);
+}
 
 function sanitizeName(name) {
-  return name
+  const result = name
     .replace(/[\x00-\x1f]/g, '')
     .replace(/[\/\\:*?"<>|]/g, '-')
     .replace(/\.{2,}/g, '.')
     .replace(/^\.+|\.+$/g, '')
+    .replace(/^-+|-+$/g, '')
     .trim() || 'unnamed';
+  return result;
 }
 
 function resolveUrl(input) {
@@ -57,7 +106,7 @@ function fetchUrl(url, redirectCount) {
     const isHttps = url.startsWith('https');
     const client = isHttps ? https : http;
     
-    const req = client.get(url, { headers: { 'User-Agent': 'temp-skill-loader/1.0' } }, (res) => {
+    const req = client.get(url, { headers: { 'User-Agent': 'deepfreeze/1.0' } }, (res) => {
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
         res.resume();
         return fetchUrl(res.headers.location, redirectCount + 1).then(resolve).catch(reject);
@@ -101,24 +150,41 @@ function parseFrontmatter(content) {
 async function main() {
   const args = process.argv.slice(2);
   const command = args[0];
-  
-  if (!command || command === '--help' || command === '-h') {
+
+  // Auto-clear stale session skills on any command
+  if (command && command !== 'help' && command !== '--help' && command !== '-h') {
+    checkSession();
+  }
+
+  if (!command || command === '--help' || command === '-h' || command === 'help') {
     console.log(`
-temp-skill — Load agent skills temporarily without permanent installation
+deepfreeze — Load agent skills temporarily without permanent installation
 
 Usage:
-  temp-skill load <url>        Load a skill from URL (GitHub or raw)
-  temp-skill list              List loaded temp skills
-  temp-skill clear             Remove all temp skills
-  temp-skill help              Show this help
+  deepfreeze load <url>        Load a skill from URL (GitHub or raw)
+  deepfreeze list              List loaded temp skills
+  deepfreeze freeze <name>     Pin a temp skill (persists across sessions)
+  deepfreeze unfreeze <name>   Unpin a frozen skill (returns to temp)
+  deepfreeze frozen            List frozen (pinned) skills
+  deepfreeze session           Show session info and loaded skill count
+  deepfreeze clear             Remove all temp skills (frozen skills untouched)
+  deepfreeze help              Show this help
+
+Modes:
+  Temp    — auto-cleanup on session restart, mutable
+  Frozen  — persists across sessions, protected from auto-cleanup
+
+Auto-cleanup: temp skills are removed when a new session starts.
+Set OPENCLAUDE_SESSION_ID or CLAUDE_SESSION_ID env var for explicit sessions.
 
 Examples:
-  temp-skill load https://github.com/vercel-labs/agent-skills
-  temp-skill load https://github.com/anthropics/skills/tree/main/pdf
-  temp-skill load https://raw.githubusercontent.com/user/repo/main/SKILL.md
+  deepfreeze load https://github.com/vercel-labs/agent-skills
+  deepfreeze freeze pdf        Pin 'pdf' skill so it survives restarts
+  deepfreeze unfreeze pdf      Return 'pdf' to temp (auto-cleanup again)
+  deepfreeze frozen            Show pinned skills
 
-Max ${MAX_SKILLS} skills per session. All skills stored in:
-  ${SKILLS_DIR}
+Max ${MAX_SKILLS} skills per session. Temp: ${SKILLS_DIR}
+Frozen: ${FROZEN_DIR}
 `);
     return;
   }
@@ -145,19 +211,114 @@ Max ${MAX_SKILLS} skills per session. All skills stored in:
   }
   
   if (command === 'clear') {
+    const clearAll = args[1] === '--all';
+    let cleared = 0;
     if (fs.existsSync(SKILLS_DIR)) {
+      const dirs = fs.readdirSync(SKILLS_DIR, { withFileTypes: true }).filter(d => d.isDirectory());
       fs.rmSync(SKILLS_DIR, { recursive: true, force: true });
-      console.log('All temp skills cleared.');
+      cleared += dirs.length;
+      console.log(`Cleared ${dirs.length} temp skill(s).`);
     } else {
       console.log('No temp skills to clear.');
     }
+    if (clearAll && fs.existsSync(FROZEN_DIR)) {
+      const dirs = fs.readdirSync(FROZEN_DIR, { withFileTypes: true }).filter(d => d.isDirectory());
+      fs.rmSync(FROZEN_DIR, { recursive: true, force: true });
+      cleared += dirs.length;
+      console.log(`Cleared ${dirs.length} frozen skill(s).`);
+    }
+    return;
+  }
+
+  if (command === 'session') {
+    const session = readSession();
+    const dirs = fs.existsSync(SKILLS_DIR)
+      ? fs.readdirSync(SKILLS_DIR, { withFileTypes: true }).filter(d => d.isDirectory())
+      : [];
+    const frozen = fs.existsSync(FROZEN_DIR)
+      ? fs.readdirSync(FROZEN_DIR, { withFileTypes: true }).filter(d => d.isDirectory())
+      : [];
+    const envSession = process.env.OPENCLAUDE_SESSION_ID || process.env.CLAUDE_SESSION_ID || process.env.KILO_SESSION_ID;
+    console.log(`Session ID: ${session ? session.id.substring(0, 40) : 'none'}`);
+    if (envSession) console.log(`Source: environment variable`);
+    else console.log(`Source: auto-generated (pid-based)`);
+    if (session) console.log(`Started: ${new Date(session.started).toISOString()}`);
+    console.log(`Temp skills: ${dirs.length}/${MAX_SKILLS}`);
+    console.log(`Frozen skills: ${frozen.length}`);
+    return;
+  }
+
+  if (command === 'freeze') {
+    const name = args[1];
+    if (!name) {
+      console.error('Error: provide a skill name. Example: deepfreeze freeze pdf');
+      process.exit(1);
+    }
+    const safeName = sanitizeName(name);
+    const srcDir = path.join(SKILLS_DIR, safeName);
+    if (!fs.existsSync(srcDir)) {
+      console.error(`Error: temp skill '${safeName}' not found. Run 'deepfreeze list' to see loaded skills.`);
+      process.exit(1);
+    }
+    fs.mkdirSync(FROZEN_DIR, { recursive: true });
+    const destDir = path.join(FROZEN_DIR, safeName);
+    if (fs.existsSync(destDir)) {
+      console.error(`Error: skill '${safeName}' is already frozen.`);
+      process.exit(1);
+    }
+    fs.renameSync(srcDir, destDir);
+    console.log(`Frozen '${safeName}' — will persist across sessions.`);
+    return;
+  }
+
+  if (command === 'unfreeze') {
+    const name = args[1];
+    if (!name) {
+      console.error('Error: provide a skill name. Example: deepfreeze unfreeze pdf');
+      process.exit(1);
+    }
+    const safeName = sanitizeName(name);
+    const srcDir = path.join(FROZEN_DIR, safeName);
+    if (!fs.existsSync(srcDir)) {
+      console.error(`Error: frozen skill '${safeName}' not found. Run 'deepfreeze frozen' to see frozen skills.`);
+      process.exit(1);
+    }
+    fs.mkdirSync(SKILLS_DIR, { recursive: true });
+    const destDir = path.join(SKILLS_DIR, safeName);
+    if (fs.existsSync(destDir)) {
+      console.error(`Error: temp skill '${safeName}' already exists. Clear it first.`);
+      process.exit(1);
+    }
+    fs.renameSync(srcDir, destDir);
+    console.log(`Unfrozen '${safeName}' — returned to temp (auto-cleanup on restart).`);
+    return;
+  }
+
+  if (command === 'frozen') {
+    if (!fs.existsSync(FROZEN_DIR)) {
+      console.log('No frozen skills.');
+      return;
+    }
+    const dirs = fs.readdirSync(FROZEN_DIR, { withFileTypes: true }).filter(d => d.isDirectory());
+    if (dirs.length === 0) {
+      console.log('No frozen skills.');
+      return;
+    }
+    console.log(`Frozen skills (${dirs.length}):`);
+    dirs.forEach((d, i) => {
+      const skillFile = path.join(FROZEN_DIR, d.name, 'SKILL.md');
+      if (fs.existsSync(skillFile)) {
+        const meta = parseFrontmatter(fs.readFileSync(skillFile, 'utf8'));
+        console.log(`  ${i + 1}. ${d.name}${meta && meta.description ? ' — ' + meta.description.substring(0, 80) : ''}`);
+      }
+    });
     return;
   }
   
   if (command === 'load') {
     const url = args[1];
     if (!url) {
-      console.error('Error: provide a URL. Example: temp-skill load https://github.com/user/repo');
+      console.error('Error: provide a URL. Example: deepfreeze load https://github.com/user/repo');
       process.exit(1);
     }
     
@@ -165,7 +326,7 @@ Max ${MAX_SKILLS} skills per session. All skills stored in:
     if (fs.existsSync(SKILLS_DIR)) {
       const count = fs.readdirSync(SKILLS_DIR, { withFileTypes: true }).filter(d => d.isDirectory()).length;
       if (count >= MAX_SKILLS) {
-        console.error(`Error: session limit reached (${count}/${MAX_SKILLS}). Run 'temp-skill clear' to free slots.`);
+        console.error(`Error: session limit reached (${count}/${MAX_SKILLS}). Run 'deepfreeze clear' to free slots.`);
         process.exit(1);
       }
     }
@@ -205,7 +366,7 @@ Max ${MAX_SKILLS} skills per session. All skills stored in:
     return;
   }
   
-  console.error(`Unknown command: ${command}. Run 'temp-skill help' for usage.`);
+  console.error(`Unknown command: ${command}. Run 'deepfreeze help' for usage.`);
   process.exit(1);
 }
 

@@ -1,10 +1,10 @@
 ---
-name: temp-skill
-description: TEMPORARY skill loader — fetches remote SKILL.md files without permanent installation. NEVER uses npx skills add or installs permanently. Use when user wants to load a skill temporarily from a GitHub repo URL, raw URL, or any HTTP link to a SKILL.md file, or says "load temp skill", "fetch skill from", "use this skill temporarily", or "temp skill".
+name: deepfreeze
+description: TEMPORARY skill loader — fetches remote SKILL.md files without permanent installation. Temp mode auto-cleans on restart. Frozen mode persists across sessions. NEVER uses npx skills add or installs permanently. Use when user wants to load a skill temporarily from a GitHub repo URL, raw URL, or any HTTP link to a SKILL.md file, or says "load temp skill", "fetch skill from", "use this skill temporarily", "temp skill", "freeze", or "deepfreeze".
 argument-hint: "URL of the skill to load (GitHub repo or raw SKILL.md URL)"
 ---
 
-# Temp Skill Loader
+# Deepfreeze
 
 Load skills from the internet without installing them permanently. Skills are cached in a session-scoped temp directory and cleaned up on demand.
 
@@ -27,6 +27,90 @@ Load skills from the internet without installing them permanently. Skills are ca
 1. Count existing skills in `.temp/` directory
 2. If count >= 50, refuse and tell the user: "Session limit reached (50 temp skills). Say 'clear temp skills' to free up slots, then try again."
 3. If count < 50, proceed with fetch
+
+## Auto-Cleanup on Session Restart
+
+Skills are **automatically removed** when a new agent session starts. The CLI tracks sessions via a `.session` marker file in the temp directory.
+
+### How It Works
+
+1. On every `load`, `list`, or `clear` command, the CLI checks the session marker
+2. If the session ID has changed (new agent session), all old temp skills are deleted first
+3. Session ID is derived from `OPENCLAUDE_SESSION_ID`, `CLAUDE_SESSION_ID`, or `KILO_SESSION_ID` environment variables
+4. If no env var is set, uses an auto-generated ID based on parent PID and time window (4-hour buckets)
+
+### Session Commands
+
+```bash
+deepfreeze session    # Show current session info, skill count, and session source
+```
+
+### For Agent Developers
+
+To ensure clean session boundaries, set a session environment variable before invoking deepfreeze:
+
+```bash
+# Set a unique session ID for this agent conversation
+export OPENCLAUDE_SESSION_ID="session-$(date +%s)-$$"
+deepfreeze load https://github.com/user/repo
+```
+
+Or if your agent framework provides a session ID, pass it through:
+
+```bash
+OPENCLAUDE_SESSION_ID="$AGENT_SESSION_ID" deepfreeze load <url>
+```
+
+### Manual Cleanup
+
+```bash
+deepfreeze clear         # Remove all temp skills (frozen skills untouched)
+deepfreeze clear --all   # Remove ALL skills (temp + frozen)
+```
+
+## Deep Freeze: Pin Skills Across Sessions
+
+**Frozen skills persist across sessions** and are protected from auto-cleanup. Use this for skills you always want available.
+
+### Commands
+
+```bash
+deepfreeze freeze <name>     # Pin a temp skill → moves to .frozen/
+deepfreeze unfreeze <name>   # Unpin → returns to .temp/ (auto-cleanup again)
+deepfreeze frozen            # List all frozen (pinned) skills
+```
+
+### When to Freeze
+
+- **Freeze** a skill when you want it available in every session without re-fetching
+- **Unfreeze** when you no longer need it pinned, or want to update it
+- Frozen skills are **not** counted toward the 50 temp skill limit
+
+### Example Workflow
+
+```bash
+deepfreeze load https://github.com/user/repo    # Load as temp
+deepfreeze freeze pdf                            # Pin it
+deepfreeze frozen                                # Confirm it's frozen
+# ... session ends, new session starts ...
+deepfreeze list                                  # Temp is empty (auto-cleared)
+deepfreeze frozen                                # 'pdf' still here!
+deepfreeze unfreeze pdf                          # Return to temp when done
+```
+
+### For Agent Developers
+
+When the user says "freeze this skill" or "pin this skill", run:
+
+```bash
+deepfreeze freeze <skill-name>
+```
+
+When they say "unfreeze" or "unpin":
+
+```bash
+deepfreeze unfreeze <skill-name>
+```
 
 ## Quick Start
 

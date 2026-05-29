@@ -1,10 +1,10 @@
 {
-  "name": "temp-skill-loader",
-  "version": "1.0.3",
-  "description": "Load agent skills from the internet temporarily without permanent installation. Works with Kilo, Claude Code, Cursor, Copilot, and any agent that supports skills.",
+  "name": "deepfreeze",
+  "version": "1.1.0",
+  "description": "Load agent skills temporarily without permanent installation. Temp mode auto-cleans on restart. Frozen mode persists across sessions.",
   "main": "index.js",
   "bin": {
-    "temp-skill": "index.js"
+    "deepfreeze": "index.js"
   },
   "keywords": [
     "agent-skill",
@@ -13,10 +13,12 @@
     "kilo",
     "cursor",
     "copilot",
-    "temp-skill",
+    "deepfreeze",
     "skills",
     "skill-loader",
-    "agent-workflow"
+    "agent-workflow",
+    "freeze",
+    "temp-skill"
   ],
   "author": "Mahmoud20",
   "license": "MIT",
@@ -29,7 +31,7 @@
   },
   "homepage": "https://github.com/mahmoud20138/temp-skill-loader#readme",
   "files": [
-    "temp-skill/",
+    "deepfreeze/",
     "index.js",
     "README.md",
     "LICENSE"

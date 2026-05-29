@@ -1,6 +1,6 @@
-# temp-skill-loader
+# deepfreeze
 
-[![npm version](https://img.shields.io/npm/v/temp-skill-loader.svg)](https://www.npmjs.com/package/temp-skill-loader)
+[![npm version](https://img.shields.io/npm/v/deepfreeze.svg)](https://www.npmjs.com/package/deepfreeze)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Load agent skills from the internet **temporarily** without permanent installation. Works with Kilo, Claude Code, Cursor, Copilot, Windsurf, Gemini, and any agent that supports skills.
@@ -18,39 +18,39 @@ Load agent skills from the internet **temporarily** without permanent installati
 ### npm (global CLI)
 
 ```bash
-npm install -g temp-skill-loader
+npm install -g deepfreeze
 ```
 
-Then use the `temp-skill` command:
+Then use the `deepfreeze` command:
 
 ```bash
-temp-skill load https://github.com/vercel-labs/agent-skills
-temp-skill list
-temp-skill clear
+deepfreeze load https://github.com/vercel-labs/agent-skills
+deepfreeze list
+deepfreeze clear
 ```
 
 ### npx (no install)
 
 ```bash
-npx temp-skill-loader load https://github.com/vercel-labs/agent-skills
+npx deepfreeze load https://github.com/vercel-labs/agent-skills
 ```
 
 ### Kilo / Claude Code / Cursor / Copilot
 
-Copy the `temp-skill/` directory to your agent's skills folder:
+Copy the `deepfreeze/` directory to your agent's skills folder:
 
 ```bash
 # Kilo
-cp -r temp-skill/ ~/.config/kilo/skills/temp-skill/
+cp -r deepfreeze/ ~/.config/kilo/skills/deepfreeze/
 
 # Claude Code
-cp -r temp-skill/ ~/.claude/skills/temp-skill/
+cp -r deepfreeze/ ~/.claude/skills/deepfreeze/
 
 # Cursor
-cp -r temp-skill/ ~/.cursor/skills/temp-skill/
+cp -r deepfreeze/ ~/.cursor/skills/deepfreeze/
 
 # Copilot
-cp -r temp-skill/ ~/.copilot/skills/temp-skill/
+cp -r deepfreeze/ ~/.copilot/skills/deepfreeze/
 ```
 
 Then say: `load temp skill from https://github.com/user/repo`
@@ -58,29 +58,36 @@ Then say: `load temp skill from https://github.com/user/repo`
 ## CLI Usage
 
 ```bash
-temp-skill load <url>     # Load a skill from URL
-temp-skill list           # List loaded temp skills
-temp-skill clear          # Remove all temp skills
-temp-skill help           # Show help
+deepfreeze load <url>     # Load a skill from URL
+deepfreeze list           # List loaded temp skills
+deepfreeze freeze <name>  # Pin a temp skill (persists across sessions)
+deepfreeze unfreeze <name> # Unpin a frozen skill
+deepfreeze frozen         # List frozen (pinned) skills
+deepfreeze session        # Show session info and skill count
+deepfreeze clear          # Remove all temp skills (frozen untouched)
+deepfreeze clear --all    # Remove all temp + frozen skills
+deepfreeze help           # Show help
 ```
+
+**Two modes:** Temp (auto-cleanup on restart) vs Frozen (persists, protected). Set `OPENCLAUDE_SESSION_ID` env var for explicit session boundaries.
 
 ### Examples
 
 ```bash
 # Load from GitHub repo (auto-resolves SKILL.md)
-temp-skill load https://github.com/vercel-labs/agent-skills
+deepfreeze load https://github.com/vercel-labs/agent-skills
 
 # Load from GitHub subfolder
-temp-skill load https://github.com/anthropics/skills/tree/main/pdf
+deepfreeze load https://github.com/anthropics/skills/tree/main/pdf
 
 # Load from raw URL
-temp-skill load https://raw.githubusercontent.com/user/repo/main/SKILL.md
+deepfreeze load https://raw.githubusercontent.com/user/repo/main/SKILL.md
 
 # List loaded skills
-temp-skill list
+deepfreeze list
 
 # Clear all
-temp-skill clear
+deepfreeze clear
 ```
 
 ## 100 Curated Coding Skills
@@ -111,7 +118,7 @@ Browse all skills at [skills.sh](https://skills.sh/).
 2. **Validate** — Checks for valid frontmatter (`name:` and `description:` fields)
 3. **Cache** — Saves to `~/.config/kilo/skills/.temp/<skill-name>/SKILL.md`
 4. **Load** — Agent reads the cached file and injects into context
-5. **Cleanup** — User says "clear temp skills" or runs `temp-skill clear`
+5. **Cleanup** — User says "clear temp skills" or runs `deepfreeze clear`
 
 ## Safety
 
@@ -124,16 +131,26 @@ Browse all skills at [skills.sh](https://skills.sh/).
 
 | Tool | Install Method |
 |---|---|
-| Kilo | `cp temp-skill/ ~/.config/kilo/skills/` |
-| Claude Code | `cp temp-skill/ ~/.claude/skills/` |
-| Cursor | `cp temp-skill/ ~/.cursor/skills/` |
-| GitHub Copilot | `cp temp-skill/ ~/.copilot/skills/` |
-| Windsurf | `cp temp-skill/ ~/.windsurf/skills/` |
-| Gemini CLI | `cp temp-skill/ ~/.gemini/skills/` |
-| Cline | `cp temp-skill/ ~/.cline/skills/` |
-| Any agent | Copy `temp-skill/` to the agent's skills directory |
+| Kilo | `cp deepfreeze/ ~/.config/kilo/skills/` |
+| Claude Code | `cp deepfreeze/ ~/.claude/skills/` |
+| Cursor | `cp deepfreeze/ ~/.cursor/skills/` |
+| GitHub Copilot | `cp deepfreeze/ ~/.copilot/skills/` |
+| Windsurf | `cp deepfreeze/ ~/.windsurf/skills/` |
+| Gemini CLI | `cp deepfreeze/ ~/.gemini/skills/` |
+| Cline | `cp deepfreeze/ ~/.cline/skills/` |
+| Any agent | Copy `deepfreeze/` to the agent's skills directory |
 
 ## Changelog
+
+### 1.0.3
+
+- **Feature**: Auto-cleanup on session restart — temp skills are automatically removed when a new agent session starts
+- **Feature**: Deep freeze mode — `freeze`/`unfreeze`/`frozen` commands to pin skills across sessions
+- **Feature**: `deepfreeze session` command shows session info and loaded skill count
+- **Feature**: `deepfreeze clear --all` to clear both temp and frozen skills
+- **Feature**: Session tracking via `OPENCLAUDE_SESSION_ID`, `CLAUDE_SESSION_ID`, or `KILO_SESSION_ID` env vars
+- **Fix**: `deepfreeze help` command now works (was rejected as unknown command)
+- **Fix**: `sanitizeName` no longer produces bare `-` from names containing only special characters
 
 ### 1.0.2
 
