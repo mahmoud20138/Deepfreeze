@@ -24,16 +24,17 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mahmoud20138/temp-skill-loader.git"
+    "url": "git+https://github.com/mahmoud20138/Deepfreeze.git"
   },
   "bugs": {
-    "url": "https://github.com/mahmoud20138/temp-skill-loader/issues"
+    "url": "https://github.com/mahmoud20138/Deepfreeze/issues"
   },
-  "homepage": "https://github.com/mahmoud20138/temp-skill-loader#readme",
+  "homepage": "https://github.com/mahmoud20138/Deepfreeze#readme",
   "files": [
     "deepfreeze/",
     "index.js",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "A1.jpeg"
   ]
 }

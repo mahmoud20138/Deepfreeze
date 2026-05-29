@@ -1,7 +1,13 @@
-# deepfreeze
+<p align="center">
+  <img src="A1.jpeg" alt="Deepfreeze Logo" width="200">
+</p>
 
-[![npm version](https://img.shields.io/npm/v/deepfreeze-cli.svg)](https://www.npmjs.com/package/deepfreeze-cli)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<h1 align="center">deepfreeze</h1>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/deepfreeze-cli"><img src="https://img.shields.io/npm/v/deepfreeze-cli.svg" alt="npm version"></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+</p>
 
 Load agent skills from the internet **temporarily** without permanent installation. Works with Kilo, Claude Code, Cursor, Copilot, Windsurf, Gemini, and any agent that supports skills.
 
