@@ -1,6 +1,6 @@
 {
-  "name": "@mahmoud208/deepfreeze",
-  "version": "2.1.0",
+  "name": "deepfreeze-cli",
+  "version": "2.1.1",
   "description": "Load agent skills temporarily without permanent installation. Temp mode auto-cleans on restart. Frozen mode persists across sessions.",
   "main": "index.js",
   "bin": {
