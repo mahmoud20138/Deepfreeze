@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="A1.jpeg" alt="Deepfreeze Logo" width="200">
+  <img src="https://raw.githubusercontent.com/mahmoud20138/Deepfreeze/master/A1.jpeg" alt="Deepfreeze Logo" width="200">
 </p>
 
 <h1 align="center">deepfreeze</h1>
@@ -147,6 +147,11 @@ Browse all skills at [skills.sh](https://skills.sh/).
 | Any agent | Copy `deepfreeze/` to the agent's skills directory |
 
 ## Changelog
+
+### 2.1.2
+
+- **Rebrand**: Repo renamed to `Deepfreeze` — all URLs updated
+- **Logo**: Added project logo to README and npm page
 
 ### 2.1.1
 
