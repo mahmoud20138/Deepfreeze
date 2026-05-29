@@ -1,5 +1,5 @@
 {
-  "name": "deepfreeze",
+  "name": "@mahmoud208/deepfreeze",
   "version": "2.1.0",
   "description": "Load agent skills temporarily without permanent installation. Temp mode auto-cleans on restart. Frozen mode persists across sessions.",
   "main": "index.js",

@@ -1,6 +1,6 @@
 # deepfreeze
 
-[![npm version](https://img.shields.io/npm/v/deepfreeze.svg)](https://www.npmjs.com/package/deepfreeze)
+[![npm version](https://img.shields.io/npm/v/@mahmoud208/deepfreeze.svg)](https://www.npmjs.com/package/@mahmoud208/deepfreeze)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Load agent skills from the internet **temporarily** without permanent installation. Works with Kilo, Claude Code, Cursor, Copilot, Windsurf, Gemini, and any agent that supports skills.
@@ -18,7 +18,7 @@ Load agent skills from the internet **temporarily** without permanent installati
 ### npm (global CLI)
 
 ```bash
-npm install -g deepfreeze
+npm install -g @mahmoud208/deepfreeze
 ```
 
 Then use the `deepfreeze` command:
@@ -32,7 +32,7 @@ deepfreeze clear
 ### npx (no install)
 
 ```bash
-npx deepfreeze load https://github.com/vercel-labs/agent-skills
+npx @mahmoud208/deepfreeze load https://github.com/vercel-labs/agent-skills
 ```
 
 ### Kilo / Claude Code / Cursor / Copilot
@@ -141,6 +141,12 @@ Browse all skills at [skills.sh](https://skills.sh/).
 | Any agent | Copy `deepfreeze/` to the agent's skills directory |
 
 ## Changelog
+
+### 2.1.0
+
+- **Rebrand**: Package renamed from `temp-skill-loader` to `@mahmoud208/deepfreeze`
+- **Feature**: All v1.0.3 features (session cleanup, freeze/unfreeze) now under new name
+- Old `temp-skill-loader` package deprecated — use `@mahmoud208/deepfreeze` instead
 
 ### 1.0.3
 
